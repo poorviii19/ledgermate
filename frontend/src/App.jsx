@@ -3,6 +3,7 @@ import Dashboard from './components/Dashboard';
 import CSVImporter from './components/CSVImporter';
 import Ledger from './components/Ledger';
 import Settlements from './components/Settlements';
+import Login from './components/Login';
 import './App.css';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
@@ -13,21 +14,19 @@ export default function App() {
   const [stats, setStats] = useState(null);
   const [ledger, setLedger] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      // 1. Fetch Members
       const membersRes = await fetch(`${API_BASE}/api/members`);
       const membersData = await membersRes.json();
       setMembers(membersData);
 
-      // 2. Fetch Ledger
       const ledgerRes = await fetch(`${API_BASE}/api/ledger`);
       const ledgerData = await ledgerRes.json();
       setLedger(ledgerData);
 
-      // 3. Fetch Calculations & Settlements
       const statsRes = await fetch(`${API_BASE}/api/settlements`);
       const statsData = await statsRes.json();
       setStats(statsData);
@@ -39,8 +38,19 @@ export default function App() {
   };
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    if (user) {
+      fetchData();
+    }
+  }, [user]);
+
+  const handleLogin = (profile) => {
+    setUser(profile);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    setActiveTab('dashboard');
+  };
 
   const handleAddMember = async (memberData) => {
     try {
@@ -90,6 +100,10 @@ export default function App() {
   };
 
   const renderContent = () => {
+    if (!user) {
+      return <Login onLogin={handleLogin} />;
+    }
+
     if (loading && !stats) {
       return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '60vh', flexDirection: 'column', gap: '1rem' }}>
@@ -137,54 +151,64 @@ export default function App() {
     }
   };
 
+  if (!user) {
+    return <div className="app-login-view">{renderContent()}</div>;
+  }
+
   return (
     <div className="app-container">
-      {/* Sidebar Navigation */}
-      <aside className="sidebar">
+      <aside className="sidebar" aria-label="Application navigation">
         <div>
           <div className="brand-section">
             <span style={{ fontSize: '1.8rem' }}>⚖️</span>
             <span className="brand-logo">LedgerMate</span>
           </div>
-          
-          <nav className="nav-links">
-            <div 
+
+          <div className="sidebar-user-card" aria-label="Signed in user profile">
+            <div className="sidebar-user-name">Welcome, {user.name}</div>
+            <div className="sidebar-user-email">{user.email}</div>
+          </div>
+
+          <nav className="nav-links" aria-label="Primary app sections">
+            <button
+              type="button"
               className={`nav-item ${activeTab === 'dashboard' ? 'active' : ''}`}
               onClick={() => setActiveTab('dashboard')}
             >
               <span className="nav-icon">📊</span> Dashboard
-            </div>
-            <div 
+            </button>
+            <button
+              type="button"
               className={`nav-item ${activeTab === 'import' ? 'active' : ''}`}
               onClick={() => setActiveTab('import')}
             >
               <span className="nav-icon">📥</span> CSV Importer
-            </div>
-            <div 
+            </button>
+            <button
+              type="button"
               className={`nav-item ${activeTab === 'ledger' ? 'active' : ''}`}
               onClick={() => setActiveTab('ledger')}
             >
               <span className="nav-icon">📖</span> Detailed Ledgers
-            </div>
-            <div 
+            </button>
+            <button
+              type="button"
               className={`nav-item ${activeTab === 'settlements' ? 'active' : ''}`}
               onClick={() => setActiveTab('settlements')}
             >
               <span className="nav-icon">🤝</span> Settlements P2P
-            </div>
+            </button>
           </nav>
         </div>
 
         <div className="sidebar-footer">
+          <button type="button" className="btn-secondary" onClick={handleLogout}>Sign out</button>
           <div>Co-Living sharing tracker</div>
           <div style={{ color: 'var(--primary)', fontWeight: 600, marginTop: '0.25rem' }}>v1.0.0</div>
         </div>
       </aside>
 
-      {/* Main Content Workspace */}
-      <main className="main-workspace">
-        {renderContent()}
-      </main>
+      <main className="main-workspace">{renderContent()}</main>
     </div>
   );
 }
