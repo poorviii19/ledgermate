@@ -5,6 +5,8 @@ import Ledger from './components/Ledger';
 import Settlements from './components/Settlements';
 import './App.css';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [members, setMembers] = useState([]);
@@ -16,17 +18,17 @@ export default function App() {
     setLoading(true);
     try {
       // 1. Fetch Members
-      const membersRes = await fetch('http://localhost:5000/api/members');
+      const membersRes = await fetch(`${API_BASE}/api/members`);
       const membersData = await membersRes.json();
       setMembers(membersData);
 
       // 2. Fetch Ledger
-      const ledgerRes = await fetch('http://localhost:5000/api/ledger');
+      const ledgerRes = await fetch(`${API_BASE}/api/ledger`);
       const ledgerData = await ledgerRes.json();
       setLedger(ledgerData);
 
       // 3. Fetch Calculations & Settlements
-      const statsRes = await fetch('http://localhost:5000/api/settlements');
+      const statsRes = await fetch(`${API_BASE}/api/settlements`);
       const statsData = await statsRes.json();
       setStats(statsData);
     } catch (err) {
@@ -42,7 +44,7 @@ export default function App() {
 
   const handleAddMember = async (memberData) => {
     try {
-      const res = await fetch('http://localhost:5000/api/members', {
+      const res = await fetch(`${API_BASE}/api/members`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(memberData)
@@ -61,7 +63,7 @@ export default function App() {
 
   const handleDeleteExpense = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/api/expenses/${id}`, {
+      const res = await fetch(`${API_BASE}/api/expenses/${id}`, {
         method: 'DELETE'
       });
       const data = await res.json();
@@ -74,7 +76,7 @@ export default function App() {
   };
 
   const handleRecordPayment = async (paymentData) => {
-    const res = await fetch('http://localhost:5000/api/expenses', {
+    const res = await fetch(`${API_BASE}/api/expenses`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(paymentData)

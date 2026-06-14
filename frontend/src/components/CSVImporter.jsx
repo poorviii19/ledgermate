@@ -1,5 +1,7 @@
 import React, { useState, useRef } from 'react';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 export default function CSVImporter({ members, onImportSuccess }) {
   const [stagedItems, setStagedItems] = useState([]);
   const [report, setReport] = useState(null);
@@ -22,7 +24,7 @@ export default function CSVImporter({ members, onImportSuccess }) {
     setIsLoading(true);
     setReport(null);
     try {
-      const res = await fetch('http://localhost:5000/api/import/stage', {
+      const res = await fetch(`${API_BASE}/api/import/stage`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ csvText })
@@ -75,7 +77,7 @@ export default function CSVImporter({ members, onImportSuccess }) {
 
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/import/commit', {
+      const res = await fetch(`${API_BASE}/api/import/commit`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ items: selectedItems })
