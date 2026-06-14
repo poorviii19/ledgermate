@@ -16,6 +16,13 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
+  useEffect(() => {
+    const saved = localStorage.getItem('ledgerMateUser');
+    if (saved) {
+      setUser(JSON.parse(saved));
+    }
+  }, []);
+
   const fetchData = async () => {
     setLoading(true);
     try {
@@ -45,10 +52,16 @@ export default function App() {
 
   const handleLogin = (profile) => {
     setUser(profile);
+    if (profile.remember) {
+      localStorage.setItem('ledgerMateUser', JSON.stringify(profile));
+    } else {
+      localStorage.removeItem('ledgerMateUser');
+    }
   };
 
   const handleLogout = () => {
     setUser(null);
+    localStorage.removeItem('ledgerMateUser');
     setActiveTab('dashboard');
   };
 
