@@ -68,3 +68,13 @@ Open `http://localhost:5173` in your browser to access LedgerMate.
 ## AI Collaboration
 * **Primary AI Collaborator**: Google Gemini (via Antigravity agent pairing framework)
 * **Usage details**: See [AI_USAGE.md](file:///C:/Users/HP/.gemini/antigravity-ide/scratch/ledgermate/AI_USAGE.md) for prompts, corrections, and lessons learned.
+
+## Deployment / Public URL
+
+Public deployed app URL: (not deployed yet) — replace this line with your live app URL after deployment.
+
+Quick deploy options:
+- Vercel: connect the `frontend` directory to Vercel and set the `backend` as a separate Server or deploy the backend to Render/Heroku and point the frontend API base URL to it.
+- Netlify + serverless functions: suitable for static frontend and lightweight API proxies.
+
+If you want, I can add a `vercel.json`/`netlify.toml` and help push the repo to GitHub to enable automated deploys.
