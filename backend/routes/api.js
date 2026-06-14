@@ -472,7 +472,7 @@ router.get('/settlements', async (req, res) => {
 
           userLedger.push({
             id: e.id,
-            date: e.date.split('T')[0],
+            date: (e.date instanceof Date ? e.date.toISOString() : String(e.date)).split('T')[0],
             description: e.description,
             currency: e.currency,
             originalAmount: e.amount,
